@@ -1,0 +1,93 @@
+Customer:
+
+| Attribute   | Data Type    | Key | Description                         |
+| ----------- | ------------ | --- | ----------------------------------- |
+| customer_id | INT          | PK  | Unique identifier for each customer |
+| name        | VARCHAR(100) |     | Customer's full name                |
+| phone       | VARCHAR(20)  |     | Customer contact number             |
+| email       | VARCHAR(100) |     | Customer email address              |
+| address     | TEXT         |     | Customer residential address        |
+
+Restaurant:
+
+| Attribute       | Data Type    | Key | Description                      |
+| --------------- | ------------ | --- | -------------------------------- |
+| restaurant_id   | INT          | PK  | Unique identifier for restaurant |
+| restaurant_name | VARCHAR(100) |     | Name of restaurant               |
+| address         | TEXT         |     | Restaurant location              |
+| phone           | VARCHAR(20)  |     | Restaurant contact number        |
+
+
+Menu_Items:
+
+| Attribute     | Data Type     | Key | Description                  |
+| ------------- | ------------- | --- | ---------------------------- |
+| item_id       | INT           | PK  | Unique menu item ID          |
+| restaurant_id | INT           | FK  | Restaurant offering the item |
+| item_name     | VARCHAR(100)  |     | Name of food item            |
+| price         | DECIMAL(10,2) |     | Price of menu item           |
+
+Orders:
+
+| Attribute    | Data Type     | Key | Description                   |
+| ------------ | ------------- | --- | ----------------------------- |
+| order_id     | INT           | PK  | Unique order ID               |
+| customer_id  | INT           | FK  | Customer who placed the order |
+| order_date   | TIMESTAMP     |     | Date and time of order        |
+| total_amount | DECIMAL(10,2) |     | Total bill amount             |
+| status       | VARCHAR(50)   |     | Current order status          |
+
+Order_Details:
+
+| Attribute | Data Type     | Key | Description             |
+| --------- | ------------- | --- | ----------------------- |
+| detail_id | INT           | PK  | Unique order detail ID  |
+| order_id  | INT           | FK  | Associated order        |
+| item_id   | INT           | FK  | Ordered menu item       |
+| quantity  | INT           |     | Quantity ordered        |
+| subtotal  | DECIMAL(10,2) |     | Cost for this item line |
+
+Payments:
+
+| Attribute      | Data Type     | Key | Description           |
+| -------------- | ------------- | --- | --------------------- |
+| payment_id     | INT           | PK  | Unique payment ID     |
+| order_id       | INT           | FK  | Related order         |
+| payment_method | VARCHAR(50)   |     | Cash, Card, etc.      |
+| payment_date   | TIMESTAMP     |     | Payment date and time |
+| amount         | DECIMAL(10,2) |     | Amount paid           |
+
+Deliver_Agents:
+
+| Attribute    | Data Type    | Key | Description              |
+| ------------ | ------------ | --- | ------------------------ |
+| agent_id     | INT          | PK  | Unique delivery agent ID |
+| name         | VARCHAR(100) |     | Agent name               |
+| phone        | VARCHAR(20)  |     | Agent contact number     |
+| vehicle_type | VARCHAR(50)  |     | Bike, Car, etc.          |
+
+
+Deliveries:
+
+| Attribute       | Data Type   | Key | Description              |
+| --------------- | ----------- | --- | ------------------------ |
+| delivery_id     | INT         | PK  | Unique delivery ID       |
+| order_id        | INT         | FK  | Order being delivered    |
+| agent_id        | INT         | FK  | Assigned delivery agent  |
+| delivery_status | VARCHAR(50) |     | Pending, Delivered, etc. |
+| delivery_time   | TIMESTAMP   |     | Delivery completion time |
+
+
+
+| Table Name      | Purpose                           |
+| --------------- | --------------------------------- |
+| Customer        | Stores customer information       |
+| Orders          | Stores customer orders            |
+| Restaurant      | Stores restaurant information     |
+| Menu_Items      | Stores available food items       |
+| Order_Details   | Stores items included in orders   |
+| Payments        | Stores payment records            |
+| Deliveries      | Stores delivery information       |
+| Delivery_Agents | Stores delivery agent information |
+
+
