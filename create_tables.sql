@@ -1,0 +1,25 @@
+-- CUSTOMER
+CREATE TABLE customer (
+    customer_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    address TEXT NOT NULL
+);
+
+-- RESTAURANT
+CREATE TABLE restaurant (
+    restaurant_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    restaurant_name VARCHAR(100) NOT NULL,
+    address TEXT NOT NULL,
+    phone VARCHAR(20) NOT NULL
+);
+
+-- DELIVERY AGENTS
+CREATE TABLE delivery_agents (
+    agent_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    vehicle_type VARCHAR(50) NOT NULL
+);
+
