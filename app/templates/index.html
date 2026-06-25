@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="hero">
+
+    <h1>🍕 Food Delivery Management System</h1>
+
+    <p>
+        Manage restaurants, orders, payments,
+        deliveries and customer reviews.
+    </p>
+
+</div>
+
+<!-- FIRST ROW -->
+
+<div class="row g-4">
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h6>👥 Customers</h6>
+            <h2>{{ customers }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h6>📦 Orders</h6>
+            <h2>{{ orders }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h6>🍽 Restaurants</h6>
+            <h2>{{ restaurants }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h6>💰 Revenue</h6>
+            <h2>Rs {{ "{:,.0f}".format(revenue) }}</h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- SECOND ROW -->
+
+<div class="row g-4 mt-2">
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h6>⭐ Avg Rating</h6>
+            <h2>{{ avg_rating }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h6>🚚 Deliveries</h6>
+            <h2>{{ deliveries }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h6>🛵 Agents</h6>
+            <h2>{{ agents }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <h6>🍕 Menu Items</h6>
+            <h2>{{ menu_items }}</h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- INSIGHTS -->
+
+<div class="row mt-4">
+
+    <div class="col-md-6">
+
+        <div class="card p-4 h-100">
+
+            <h4>🏆 Most Active Customer</h4>
+
+            {% if top_customer %}
+                <h3>{{ top_customer[0] }}</h3>
+                <p>{{ top_customer[1] }} Orders</p>
+            {% else %}
+                <p>No customer data available.</p>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="card p-4 h-100">
+
+            <h4>🍽 Top Restaurant</h4>
+
+            {% if top_restaurant %}
+                <h3>{{ top_restaurant[0] }}</h3>
+                <p>Revenue: Rs {{ "{:,.0f}".format(top_restaurant[1]) }}</p>
+            {% else %}
+                <p>No revenue data available.</p>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- RECENT ORDERS & REVIEWS -->
+
+<div class="row mt-4">
+
+    <div class="col-md-6">
+
+        <div class="card p-4">
+
+            <h4>📦 Recent Orders</h4>
+
+            <ul class="list-group list-group-flush">
+
+                {% for order in recent_orders %}
+
+                <li class="list-group-item">
+                    Order #{{ order[0] }}
+                    <span class="float-end">
+                        {{ order[1] }}
+                    </span>
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <div class="card p-4">
+
+            <h4>⭐ Latest Reviews</h4>
+
+            {% for review in latest_reviews %}
+
+            <div class="review-card">
+
+                <strong>{{ review[0] }}/5 ⭐</strong>
+
+                <p class="mb-0 mt-2">
+                    {{ review[1] }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
