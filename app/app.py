@@ -97,3 +97,48 @@ def dashboard():
         recent_orders=recent_orders,
         latest_reviews=latest_reviews
     )
+
+@app.route("/restaurants")
+def restaurants():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT restaurant_name, address, phone
+        FROM restaurant
+    """)
+
+    restaurants = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "restaurants.html",
+        restaurants=restaurants
+    )
+
+@app.route("/menu")
+def menu():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT r.restaurant_name,
+               m.item_name,
+               m.price
+        FROM restaurant r,
+             menu_items m
+        WHERE r.restaurant_id = m.restaurant_id
+    """)
+
+    menu_items = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "menu.html",
+        menu_items=menu_items
+    )
+
