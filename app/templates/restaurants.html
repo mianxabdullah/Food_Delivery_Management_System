@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="page-title">Restaurants</h2>
+
+<div class="row">
+
+{% for r in restaurants %}
+
+<div class="col-md-4 mb-4">
+
+    <div class="card p-4 restaurant-card">
+
+        <h4>{{ r[0] }}</h4>
+
+        <p>{{ r[1] }}</p>
+
+        <small>{{ r[2] }}</small>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}
