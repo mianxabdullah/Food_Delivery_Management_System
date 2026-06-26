@@ -142,3 +142,52 @@ def menu():
         menu_items=menu_items
     )
 
+@app.route("/reviews")
+def reviews():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT c.name,
+               rv.rating,
+               rv.comment
+        FROM customer c,
+             reviews rv
+        WHERE c.customer_id = rv.customer_id
+    """)
+
+    reviews = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "reviews.html",
+        reviews=reviews
+    )
+
+@app.route("/analytics")
+def analytics():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT r.restaurant_name,
+               SUM(od.subtotal) revenue
+        FROM restaurant r,
+             menu_items m,
+             order_details od
+        WHERE r.restaurant_id = m.restaurant_id
+        AND m.item_id = od.item_id
+        GROUP BY r.restaurant_name
+    """)
+
+    revenue_data = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "analytics.html",
+        revenue_data=revenue_data
+    )
