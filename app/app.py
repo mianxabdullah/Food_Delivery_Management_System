@@ -191,3 +191,84 @@ def analytics():
         "analytics.html",
         revenue_data=revenue_data
     )
+
+@app.route("/place_order", methods=["GET", "POST"])
+def place_order():
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    if request.method == "POST":
+
+        customer_id = request.form["customer_id"]
+        item_id = request.form["item_id"]
+        quantity = int(request.form["quantity"])
+        payment_method = request.form["payment_method"]
+
+        cur.execute("""
+            SELECT price
+            FROM menu_items
+            WHERE item_id=%s
+        """, (item_id,))
+
+        price = cur.fetchone()[0]
+
+        total = price * quantity
+
+        cur.execute("""
+            INSERT INTO orders
+            (customer_id,total_amount,status)
+            VALUES (%s,%s,'Pending')
+            RETURNING order_id
+        """, (customer_id,total))
+
+        order_id = cur.fetchone()[0]
+
+        cur.execute("""
+            INSERT INTO order_details
+            (order_id,item_id,quantity,subtotal)
+            VALUES (%s,%s,%s,%s)
+        """,(order_id,item_id,quantity,total))
+
+        cur.execute("""
+            INSERT INTO payments
+            (order_id,payment_method,amount)
+            VALUES (%s,%s,%s)
+        """,(order_id,payment_method,total))
+
+        cur.execute("""
+            INSERT INTO deliveries
+            (order_id,agent_id,delivery_status)
+            VALUES (%s,1,'Assigned')
+        """,(order_id,))
+
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
+        return redirect("/")
+
+    cur.execute("""
+        SELECT customer_id,name
+        FROM customer
+    """)
+    customers = cur.fetchall()
+
+    cur.execute("""
+        SELECT item_id,item_name,price
+        FROM menu_items
+    """)
+    items = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "place_order.html",
+        customers=customers,
+        items=items
+    )
+
+if __name__ == "__main__":
+    app.run(debug=True)
