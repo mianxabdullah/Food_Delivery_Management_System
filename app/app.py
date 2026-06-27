@@ -270,5 +270,45 @@ def place_order():
         items=items
     )
 
+@app.route("/customers", methods=["POST"])
+def create_customer():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # Accept JSON or form-encoded data
+    data = request.get_json(silent=True) or request.form
+
+    name = data.get("name")
+    phone = data.get("phone")
+    email = data.get("email")
+    address = data.get("address")
+
+    if not (name and phone and email and address):
+        cur.close()
+        conn.close()
+        return jsonify({"error": "missing fields"}), 400
+
+    try:
+        cur.execute(
+            """
+            INSERT INTO customer (name, phone, email, address)
+            VALUES (%s, %s, %s, %s)
+            RETURNING customer_id
+            """,
+            (name, phone, email, address)
+        )
+        new_id = cur.fetchone()[0]
+        conn.commit()
+    except Exception as exc:
+        conn.rollback()
+        cur.close()
+        conn.close()
+        return jsonify({"error": str(exc)}), 400
+
+    cur.close()
+    conn.close()
+
+    return jsonify({"id": new_id, "name": name})
+
 if __name__ == "__main__":
     app.run(debug=True)
