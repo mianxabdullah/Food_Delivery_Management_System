@@ -310,5 +310,61 @@ def create_customer():
 
     return jsonify({"id": new_id, "name": name})
 
+@app.route("/add_review", methods=["GET","POST"])
+def add_review():
+
+    conn = get_connection()
+    cur = conn.cursor()
+
+    if request.method == "POST":
+
+        customer_id = request.form["customer_id"]
+        restaurant_id = request.form["restaurant_id"]
+        rating = request.form["rating"]
+        comment = request.form["comment"]
+
+        cur.execute("""
+            INSERT INTO reviews
+            (
+                customer_id,
+                restaurant_id,
+                rating,
+                comment
+            )
+            VALUES (%s,%s,%s,%s)
+        """,(customer_id,
+             restaurant_id,
+             rating,
+             comment))
+
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
+        return redirect("/reviews")
+
+    cur.execute("""
+        SELECT customer_id,name
+        FROM customer
+    """)
+    customers = cur.fetchall()
+
+    cur.execute("""
+        SELECT restaurant_id,
+               restaurant_name
+        FROM restaurant
+    """)
+    restaurants = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "add_review.html",
+        customers=customers,
+        restaurants=restaurants
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
