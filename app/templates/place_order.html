@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Place Order</h2>
+
+<div class="card p-4">
+
+<form method="POST">
+
+<div class="mb-3">
+<label>Customer</label>
+
+<select name="customer_id" class="form-control">
+
+{% for c in customers %}
+<option value="{{ c[0] }}">
+{{ c[1] }}
+</option>
+{% endfor %}
+
+                <option value="__new__">+ Add new customer</option>
+
+</select>
+</div>
+
+<!-- Inline new-customer form (hidden until selected) -->
+<div id="new-customer" class="card p-3 mb-3" style="display:none;">
+        <h5>Add New Customer</h5>
+        <div class="mb-2">
+                <input name="new_name" class="form-control" placeholder="Full name">
+        </div>
+        <div class="mb-2">
+                <input name="new_phone" class="form-control" placeholder="Phone">
+        </div>
+        <div class="mb-2">
+                <input name="new_email" class="form-control" placeholder="Email">
+        </div>
+        <div class="mb-2">
+                <input name="new_address" class="form-control" placeholder="Address">
+        </div>
+        <div>
+                <button id="create-customer" type="button" class="btn btn-primary">Create customer</button>
+                <button id="cancel-new-customer" type="button" class="btn btn-secondary">Cancel</button>
+        </div>
+        <div id="new-customer-msg" class="mt-2 text-danger" style="display:none;"></div>
+</div>
+
+<div class="mb-3">
+<label>Menu Item</label>
+
+<select name="item_id" class="form-control">
+
+{% for i in items %}
+<option value="{{ i[0] }}">
+{{ i[1] }} (Rs {{ i[2] }})
+</option>
+{% endfor %}
+
+</select>
+</div>
+
+<div class="mb-3">
+<label>Quantity</label>
+<input type="number"
+       name="quantity"
+       class="form-control"
+       value="1">
+</div>
+
+<div class="mb-3">
+<label>Payment Method</label>
+
+<select name="payment_method"
+        class="form-control">
+
+<option>Cash</option>
+<option>Credit Card</option>
+<option>Debit Card</option>
+
+</select>
+</div>
+
+<button class="btn btn-success">
+Place Order
+</button>
+
+</form>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+        const sel = document.querySelector('select[name="customer_id"]');
+        const newDiv = document.getElementById('new-customer');
+        const createBtn = document.getElementById('create-customer');
+        const cancelBtn = document.getElementById('cancel-new-customer');
+        const msg = document.getElementById('new-customer-msg');
+
+        sel.addEventListener('change', function(e){
+                if(e.target.value === '__new__'){
+                        newDiv.style.display = '';
+                } else {
+                        newDiv.style.display = 'none';
+                        msg.style.display = 'none';
+                }
+        });
+
+        cancelBtn.addEventListener('click', function(){
+                // reset selection to first option
+                sel.selectedIndex = 0;
+                newDiv.style.display = 'none';
+                msg.style.display = 'none';
+        });
+
+        createBtn.addEventListener('click', async function(){
+                msg.style.display = 'none';
+                const name = document.querySelector('input[name="new_name"]').value.trim();
+                const phone = document.querySelector('input[name="new_phone"]').value.trim();
+                const email = document.querySelector('input[name="new_email"]').value.trim();
+                const address = document.querySelector('input[name="new_address"]').value.trim();
+
+                if(!name || !phone || !email || !address){
+                        msg.textContent = 'All fields are required.';
+                        msg.style.display = '';
+                        return;
+                }
+
+                try{
+                        const res = await fetch('/customers', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ name, phone, email, address })
+                        });
+                        const data = await res.json();
+                        if(!res.ok){
+                                msg.textContent = data.error || 'Failed to create customer';
+                                msg.style.display = '';
+                                return;
+                        }
+
+                        // add new option and select it
+                        const opt = document.createElement('option');
+                        opt.value = data.id;
+                        opt.textContent = data.name;
+                        opt.selected = true;
+                        sel.appendChild(opt);
+
+                        newDiv.style.display = 'none';
+                } catch(err){
+                        msg.textContent = err.message || 'Request failed';
+                        msg.style.display = '';
+                }
+        });
+});
+</script>
+
+{% endblock %}
